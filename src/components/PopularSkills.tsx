@@ -1,12 +1,17 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import cookingSkill from "@/assets/cooking-skill.jpg";
 import graphicDesignSkill from "@/assets/graphic-design-skill.jpg";
 import guitarSkill from "@/assets/guitar-skill.jpg";
 import excelSkill from "@/assets/excel-skill.jpg";
+import SkillBrowser from "./SkillBrowser";
 
 const PopularSkills = () => {
+  const [skillBrowserOpen, setSkillBrowserOpen] = useState(false);
+  const { toast } = useToast();
   const skills = [
     {
       name: "Cooking",
@@ -42,9 +47,18 @@ const PopularSkills = () => {
     }
   ];
 
+  const handleExploreSkill = (skillName: string) => {
+    toast({
+      title: `Exploring ${skillName} classes!`,
+      description: "Opening skill browser with matching instructors..."
+    });
+    setSkillBrowserOpen(true);
+  };
+
   return (
-    <section className="py-16 lg:py-24 bg-muted/30">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <section id="popular-skills" className="py-16 lg:py-24 bg-muted/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
@@ -100,6 +114,7 @@ const PopularSkills = () => {
                 <Button 
                   variant="outline" 
                   className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all"
+                  onClick={() => handleExploreSkill(skill.name)}
                 >
                   Explore Classes
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -111,13 +126,20 @@ const PopularSkills = () => {
 
         {/* View All Button */}
         <div className="text-center mt-12">
-          <Button size="lg" variant="outline" className="group">
+          <Button size="lg" variant="outline" className="group" onClick={() => setSkillBrowserOpen(true)}>
             View All Skills
             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>
       </div>
     </section>
+
+    {/* Modals */}
+    <SkillBrowser
+      isOpen={skillBrowserOpen}
+      onClose={() => setSkillBrowserOpen(false)}
+    />
+  </>
   );
 };
 

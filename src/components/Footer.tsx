@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Facebook, 
   Twitter, 
@@ -14,7 +16,34 @@ import {
 } from "lucide-react";
 
 const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const { toast } = useToast();
   const currentYear = new Date().getFullYear();
+
+  const handleNewsletterSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address to subscribe.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubscribing(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      toast({
+        title: "Successfully subscribed!",
+        description: "Welcome to SkillSwap Hub newsletter. Check your inbox for a confirmation email."
+      });
+      setEmail("");
+      setIsSubscribing(false);
+    }, 1000);
+  };
 
   const footerLinks = {
     company: [
@@ -166,16 +195,23 @@ const Footer = () => {
               Get the latest tips, success stories, and special offers.
             </p>
             
-            <div className="space-y-3">
+            <form onSubmit={handleNewsletterSignup} className="space-y-3">
               <Input
                 type="email"
                 placeholder="Enter your email"
                 className="bg-background/10 border-background/20 text-background placeholder:text-background/50"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
-              <Button className="w-full btn-gradient">
-                Subscribe
+              <Button 
+                type="submit" 
+                className="w-full btn-gradient"
+                disabled={isSubscribing}
+              >
+                {isSubscribing ? "Subscribing..." : "Subscribe"}
               </Button>
-            </div>
+            </form>
           </div>
         </div>
 

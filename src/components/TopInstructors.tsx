@@ -1,12 +1,18 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, MapPin, Clock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import instructorSarah from "@/assets/instructor-sarah.jpg";
 import instructorMike from "@/assets/instructor-mike.jpg";
 import instructorEmma from "@/assets/instructor-emma.jpg";
 import instructorDavid from "@/assets/instructor-david.jpg";
+import InstructorProfile from "./InstructorProfile";
 
 const TopInstructors = () => {
+  const [selectedInstructor, setSelectedInstructor] = useState<any>(null);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const { toast } = useToast();
   const instructors = [
     {
       name: "Sarah Chen",
@@ -62,6 +68,20 @@ const TopInstructors = () => {
     }
   ];
 
+  const handleViewProfile = (instructor: any) => {
+    setSelectedInstructor(instructor);
+    setProfileModalOpen(true);
+  };
+
+  const handleBookSession = (instructor: any) => {
+    toast({
+      title: "Opening booking calendar...",
+      description: `Get ready to book a session with ${instructor.name}!`
+    });
+    setSelectedInstructor(instructor);
+    setProfileModalOpen(true);
+  };
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
       <Star
@@ -78,8 +98,9 @@ const TopInstructors = () => {
   };
 
   return (
-    <section className="py-16 lg:py-24">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <section id="instructors" className="py-16 lg:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
@@ -112,7 +133,7 @@ const TopInstructors = () => {
                 
                 {/* Quick Actions Overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <Button size="sm" className="btn-gradient">
+                  <Button size="sm" className="btn-gradient" onClick={() => handleViewProfile(instructor)}>
                     View Profile
                   </Button>
                 </div>
@@ -173,7 +194,7 @@ const TopInstructors = () => {
                 </div>
 
                 {/* Action Button */}
-                <Button className="w-full btn-gradient">
+                <Button className="w-full btn-gradient" onClick={() => handleBookSession(instructor)}>
                   Book a Session
                 </Button>
               </CardContent>
@@ -183,12 +204,20 @@ const TopInstructors = () => {
 
         {/* View All Button */}
         <div className="text-center mt-12">
-          <Button size="lg" variant="outline">
+          <Button size="lg" variant="outline" onClick={() => toast({ title: "All instructors", description: "Showing all available instructors..." })}>
             View All Instructors
           </Button>
         </div>
       </div>
     </section>
+
+    {/* Modals */}
+    <InstructorProfile
+      isOpen={profileModalOpen}
+      onClose={() => setProfileModalOpen(false)}
+      instructor={selectedInstructor}
+    />
+  </>
   );
 };
 

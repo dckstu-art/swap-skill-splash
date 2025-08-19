@@ -1,7 +1,25 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, Calendar, GraduationCap, ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import AuthModal from "./AuthModal";
+import SkillBrowser from "./SkillBrowser";
 
 const HowItWorks = () => {
+  const [skillBrowserOpen, setSkillBrowserOpen] = useState(false);
+  const [authModal, setAuthModal] = useState({ isOpen: false, mode: 'signup' as 'login' | 'signup' });
+  const { toast } = useToast();
+
+  const handleAuthModal = (mode: 'login' | 'signup') => {
+    setAuthModal({ isOpen: true, mode });
+  };
+
+  const toggleAuthMode = () => {
+    setAuthModal(prev => ({ 
+      ...prev, 
+      mode: prev.mode === 'login' ? 'signup' : 'login' 
+    }));
+  };
   const steps = [
     {
       step: 1,
@@ -39,8 +57,9 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-16 lg:py-24 bg-gradient-to-br from-muted/20 via-background to-muted/20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <section id="how-it-works" className="py-16 lg:py-24 bg-gradient-to-br from-muted/20 via-background to-muted/20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
@@ -125,16 +144,35 @@ const HowItWorks = () => {
             Join thousands of learners and teachers already using SkillSwap Hub to achieve their goals
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary-hover transition-colors">
+            <button 
+              className="px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary-hover transition-colors"
+              onClick={() => setSkillBrowserOpen(true)}
+            >
               Start Learning
             </button>
-            <button className="px-8 py-3 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary-hover transition-colors">
+            <button 
+              className="px-8 py-3 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary-hover transition-colors"
+              onClick={() => handleAuthModal('signup')}
+            >
               Become a Teacher
             </button>
           </div>
         </div>
       </div>
     </section>
+
+    {/* Modals */}
+    <SkillBrowser
+      isOpen={skillBrowserOpen}
+      onClose={() => setSkillBrowserOpen(false)}
+    />
+    <AuthModal
+      isOpen={authModal.isOpen}
+      onClose={() => setAuthModal(prev => ({ ...prev, isOpen: false }))}
+      mode={authModal.mode}
+      onToggleMode={toggleAuthMode}
+    />
+  </>
   );
 };
 
